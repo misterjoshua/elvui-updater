@@ -3,15 +3,15 @@ param (
     [string] $InstallPath
 )
 
-enum DownloadHrefMethod {
-    ClientApi = "ClientApi"
-    PageScrape = "PageScrape"
+enum DownloadUrlMethod {
+    ClientApi = 0
+    PageScrape = 1
 }
 
-function Get-LatestDownloadHref([DownloadHrefMethod] $method = [DownloadHrefMethod]::ClientApi) {
+function Get-LatestDownloadUrl([DownloadUrlMethod] $method = [DownloadUrlMethod]::ClientApi) {
     switch ($method) {
-        "ClientApi" { $href = Get-LatestDownloadHrefFromApi; continue }
-        "PageScrape" { $href = Get-LatestDownloadHrefFromPage; continue }
+        "ClientApi" { $href = Get-LatestDownloadUrlFromApi; continue }
+        "PageScrape" { $href = Get-LatestDownloadUrlFromPage; continue }
         Default { throw "Unsupported method: $method" }
     }
 
@@ -20,19 +20,19 @@ function Get-LatestDownloadHref([DownloadHrefMethod] $method = [DownloadHrefMeth
 }
 
 # Get the latest download url from the tukui client api
-function Get-LatestDownloadHrefFromApi {
+function Get-LatestDownloadUrlFromApi {
     ((Invoke-WebRequest $clientApiUrl).Content | ConvertFrom-Json).url
 }
 
 # Get the latest download url by scraping the download page
-function Get-LatestDownloadHrefFromPage {
+function Get-LatestDownloadUrlFromPage {
     $request = Invoke-WebRequest $updatePage
     $downloadLink = $request.Links | Where-Object { $_.href -like "*elvui*.zip" } | Select -First 1
     $downloadBaseUrl + $downloadLink.href
 }
 
-function Get-ZipLocalPath($downloadHref) {
-    $fileName = $downloadHref -replace ".*/",""
+function Get-ZipLocalPath($DownloadUrl) {
+    $fileName = $DownloadUrl -replace ".*/",""
     Write-Host @infoStyle "The newest file is $fileName"
     $env:TEMP + "\$fileName"
 }
@@ -51,8 +51,8 @@ $infoStyle = @{Foreground = "Cyan"}
 try {
     Write-Host @infoStyle "Checking for elvui updates"
 
-    $downloadHref = Get-LatestDownloadHref
-    $zipPath = Get-ZipLocalPath -downloadHref $downloadHref
+    $DownloadUrl = Get-LatestDownloadUrl
+    $zipPath = Get-ZipLocalPath -DownloadUrl $DownloadUrl
 
     if (-not (Test-Path $zipPath)) {
         Write-Host @infoStyle "Downloading $downloadUrl to $zipPath"
