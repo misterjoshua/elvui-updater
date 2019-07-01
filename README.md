@@ -1,6 +1,6 @@
 # ElvUI Updater
 
-This project is a Powershell script that is able to be automatically update ElvUI from the vendor's download page on Windows. This project exists so that I can auto update my girlfriend's and my ElvUI without the TukUI client since ElvUI isn't available through any of the normal auto-updating channels.
+This project is a Powershell script that is able to automatically update ElvUI from the vendor's download page on Windows. This project exists so that I can auto update my girlfriend's and my ElvUI without the TukUI client since ElvUI isn't available through any of the normal auto-updating channels.
 
 ## How to use
 Here is an example of how this script is used:
